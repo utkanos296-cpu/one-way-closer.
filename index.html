@@ -170,7 +170,7 @@ const extras={uk:{headline:'П’ять років<br>окремо.<br><em>Од�
 <script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://xjolkkuwllznpcvthfdk.supabase.co','sb_publishable_MhKVVnWC8jTd_-jetR5gnw_Zp9muStg');
-const endpoint='https://xjolkkuwllznpcvthfdk.supabase.co/functions/v1/submit-donation';
+const endpoint='https://xjolkkuwllznpcvthfdk.supabase.co/functions/v1/submit-donation-v2';
 const $id=id=>document.getElementById(id);
 async function refreshProgress(){
  const {data,error}=await sb.rpc('get_fund_progress');
