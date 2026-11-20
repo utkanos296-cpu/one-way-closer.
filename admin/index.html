@@ -1,24 +1,58 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10131a"><title>One Way Closer — Admin</title><style>:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#10131a;color:#f4f0e9;font:15px system-ui,sans-serif;padding:20px}.panel{width:min(450px,100%);background:#1a2028;border:1px solid #39424b;border-radius:18px;padding:30px}.brand{font-size:20px;font-weight:800;letter-spacing:-1px}.brand span{color:#d8ff91}h1{font-size:28px;margin:32px 0 9px}p{color:#aeb7c1;line-height:1.6}label{display:block;margin:18px 0 7px;font-size:13px}input{width:100%;padding:14px;border-radius:8px;border:1px solid #59616c;background:#10131a;color:white;font:inherit}button{border:0;border-radius:9px;background:#d8ff91;color:#10131a;font-weight:800;padding:14px 20px;cursor:pointer;width:100%;margin-top:22px}button:disabled{opacity:.55;cursor:wait}.link{display:block;color:#d8ff91;margin-top:24px;text-decoration:none;font-size:13px}.error{color:#ffaaa9;min-height:20px;overflow-wrap:anywhere}.hide{display:none}.pill{display:inline-block;border:1px solid #d8ff91;color:#d8ff91;padding:7px 11px;border-radius:20px;font-size:12px}small{color:#aeb7c1}</style></head><body><main class="panel"><div class="brand">oneway<span>closer.</span> <small>/ admin</small></div><section id="login"><h1>Вход администратора</h1><p>Войди с email и паролем, которые создал в Supabase Authentication.</p><form id="form"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required><button id="submit" type="submit">Войти</button><p id="error" class="error" role="alert"></p></form></section><section id="dashboard" class="hide"><h1>Панель управления 👑</h1><div class="pill" id="role"></div><p id="welcome"></p><p>Авторизация и проверка прав работают. Следующим этапом подключим список заявок, подтверждение платежей и приглашения администраторов.</p><button id="logout">Выйти</button></section><a class="link" href="/">← На главный сайт</a></main><script type="module">
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10131a"><title>One Way Closer — Admin</title><style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#10131a;color:#f4f0e9;font:15px system-ui,sans-serif;padding:25px 16px}.panel{max-width:850px;margin:auto;background:#1a2028;border:1px solid #39424b;border-radius:18px;padding:clamp(18px,4vw,32px)}.brand{font-size:20px;font-weight:800;letter-spacing:-1px}.brand span{color:#d8ff91}h1{font-size:28px;margin:28px 0 9px}h2{font-size:21px}p{color:#aeb7c1;line-height:1.6}label{display:block;margin:18px 0 7px;font-size:13px}input{width:100%;padding:14px;border-radius:8px;border:1px solid #59616c;background:#10131a;color:white;font:inherit}button{border:0;border-radius:9px;background:#d8ff91;color:#10131a;font-weight:800;padding:13px 18px;cursor:pointer;margin-top:12px}button:disabled{opacity:.55;cursor:wait}.full{width:100%}.link{display:block;color:#d8ff91;margin-top:24px;text-decoration:none;font-size:13px}.error{color:#ffaaa9;min-height:20px;overflow-wrap:anywhere}.hide{display:none}.pill{display:inline-block;border:1px solid #d8ff91;color:#d8ff91;padding:7px 11px;border-radius:20px;font-size:12px}small{color:#aeb7c1}.donation{background:#111820;border:1px solid #39424b;border-radius:12px;padding:17px;margin:14px 0;overflow-wrap:anywhere}.donation strong{font-size:22px}.donation .meta{font-size:13px;color:#aeb7c1}.actions{display:flex;flex-wrap:wrap;gap:9px}.reject{background:#e7a2a2}.receipt{background:#303c49;color:white}.muted{color:#aeb7c1;font-size:13px}
+</style></head><body><main class="panel"><div class="brand">oneway<span>closer.</span> <small>/ admin</small></div><section id="login"><h1>Вход администратора</h1><p>Войди с email и паролем из Supabase Authentication.</p><form id="form"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required><button class="full" id="submit" type="submit">Войти</button><p id="error" class="error" role="alert"></p></form></section><section id="dashboard" class="hide"><h1>Панель управления 👑</h1><div class="pill" id="role"></div><p id="welcome"></p><h2>Заявки на проверку</h2><p class="muted">Сначала проверь фактическое поступление денег в PayPal, банке или кошельке. Скриншот сам по себе не доказывает оплату.</p><button id="refresh">↻ Обновить заявки</button><p id="dash-message" role="status"></p><div id="donations"></div><button id="logout">Выйти</button></section><a class="link" href="/">← На главный сайт</a></main><script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
 const supabase=createClient('https://xjolkkuwllznpcvthfdk.supabase.co','sb_publishable_MhKVVnWC8jTd_-jetR5gnw_Zp9muStg');
 const el=id=>document.getElementById(id);
 function message(t){el('error').textContent=t}
 function showLogin(){el('dashboard').classList.add('hide');el('login').classList.remove('hide')}
+const names={maib:'🇲🇩 Maib',russian_card:'🇷🇺 Сбербанк',paypal:'PayPal',usdt_trc20:'USDT TRC20'};
+async function loadDonations(){
+ const box=el('donations');el('dash-message').textContent='Загружаем заявки…';box.replaceChildren();
+ const {data,error}=await supabase.from('donations').select('id,amount_usd,payment_method,receipt_path,created_at,status').eq('status','pending').order('created_at',{ascending:false}).limit(100);
+ if(error){el('dash-message').textContent='Ошибка загрузки: '+error.message;return;}
+ el('dash-message').textContent=data.length?`Ожидают проверки: ${data.length}${data.length===100?' (показаны первые 100)':''}`:'Новых заявок нет 🎉';
+ for(const d of data){
+  const card=document.createElement('article');card.className='donation';
+  const title=document.createElement('strong');title.textContent=`$${Number(d.amount_usd).toFixed(2)} · ${names[d.payment_method]||d.payment_method}`;
+  const meta=document.createElement('p');meta.className='meta';meta.textContent='Заявка: '+new Date(d.created_at).toLocaleString('ru-RU');
+  const actions=document.createElement('div');actions.className='actions';
+  const receipt=document.createElement('button');receipt.textContent='📷 Открыть скриншот';receipt.className='receipt';
+  receipt.onclick=async()=>{
+   receipt.disabled=true;
+   try{
+    if(!d.receipt_path)throw new Error('Скриншот не прикреплён');
+    const {data:link,error:e}=await supabase.storage.from('donation-receipts').createSignedUrl(d.receipt_path,60);
+    if(e||!link?.signedUrl)throw new Error(e?.message||'Не удалось получить ссылку');
+    window.open(link.signedUrl,'_blank','noopener,noreferrer');
+   }catch(e){alert('Ошибка скриншота: '+e.message)}finally{receipt.disabled=false}
+  };
+  const approve=document.createElement('button');approve.textContent='✓ Подтвердить';
+  const reject=document.createElement('button');reject.textContent='✕ Отклонить';reject.className='reject';
+  async function review(ok){
+   if(!confirm(ok?'Ты проверил реальное поступление денег и подтверждаешь перевод?':'Отклонить эту заявку?'))return;
+   approve.disabled=reject.disabled=true;
+   const {data:updated,error:e}=await supabase.rpc('review_donation',{p_donation_id:d.id,p_approve:ok});
+   if(e||updated!==true){alert('Не удалось обновить заявку: '+(e?.message||'Возможно, она уже обработана'));approve.disabled=reject.disabled=false;return;}
+   await loadDonations();
+  }
+  approve.onclick=()=>review(true);reject.onclick=()=>review(false);
+  actions.append(receipt,approve,reject);card.append(title,meta,actions);box.append(card);
+ }
+}
 async function verify(){
  const {data:{user},error}=await supabase.auth.getUser();
  if(error||!user){showLogin();if(error)message('Ошибка проверки входа: '+error.message);return}
  const result=await supabase.from('admins').select('role').eq('user_id',user.id).maybeSingle();
- if(result.error){showLogin();message('Ошибка чтения роли: '+result.error.message+' (код '+result.error.code+'). Не отключайте RLS.');return}
- if(!result.data){showLogin();message('Для текущего пользователя не найдена роль администратора. Проверьте UID аккаунта в Supabase.');return}
- if(!['owner','admin'].includes(result.data.role)){showLogin();message('Недопустимая роль пользователя.');return}
+ if(result.error){showLogin();message('Ошибка чтения роли: '+result.error.message);return}
+ if(!result.data||!['owner','admin'].includes(result.data.role)){showLogin();message('Нет доступа администратора.');return}
  el('role').textContent=result.data.role==='owner'?'👑 Главный администратор':'Администратор';
  el('welcome').textContent='Вы вошли как '+user.email;
  message('');el('login').classList.add('hide');el('dashboard').classList.remove('hide');
+ await loadDonations();
 }
 el('form').addEventListener('submit',async e=>{e.preventDefault();message('');el('submit').disabled=true;try{const {error}=await supabase.auth.signInWithPassword({email:el('email').value.trim(),password:el('password').value});if(error){message('Не удалось войти: '+error.message);return}await verify()}catch(err){message('Ошибка соединения: '+(err?.message||'Попробуйте ещё раз.'))}finally{el('submit').disabled=false}});
+el('refresh').onclick=loadDonations;
 el('logout').addEventListener('click',async()=>{await supabase.auth.signOut();el('password').value='';showLogin()});
 verify().catch(err=>message('Ошибка проверки: '+(err?.message||'Неизвестная ошибка')));
 </script></body></html>
-Да, всё правильно! 😁👑
-
-Это обновлённый код админ-панели One Way Closer. Я прове
