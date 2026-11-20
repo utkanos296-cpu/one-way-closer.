@@ -153,4 +153,53 @@ cat();
   updateDonationShortcut();
 })();
 </script>
+
+<style>
+.real-payments{display:grid;gap:10px;margin-top:12px}.real-payments .pay-option{background:#fff;border:1px solid #d9ddd5;border-radius:10px;padding:15px}.real-payments .pay-option strong{display:block;color:#1a2420;font-size:14px}.real-payments .pay-option small{display:block;color:#65726b;margin:4px 0 8px}.real-payments .pay-value{font-size:16px;font-weight:800;color:#18231e;overflow-wrap:anywhere;user-select:all}.real-payments .pay-copy{margin-top:10px;width:100%;background:#1a2420;color:#d8ff91;border:0;border-radius:7px;padding:11px;font-weight:800}.real-payments .pay-caution{font-size:12px;color:#596b5d;line-height:1.5;margin:5px 0 0}
+</style>
+<script>
+(function(){
+  const info=document.getElementById('payment-info');
+  const paymentDetails={
+    paypal:[{name:'PayPal',hint:'Имя пользователя PayPal',value:'alekseevaang'}],
+    card:[
+      {name:'🇲🇩 Maib — Молдова',hint:'Номер карты',value:'4361510060709972'},
+      {name:'🇷🇺 Сбербанк — Россия',hint:'Номер карты',value:'2202205360703414'}
+    ]
+  };
+  function showPayment(method){
+    const amount=Number(document.getElementById('custom').value);
+    info.replaceChildren();
+    const heading=document.createElement('strong');
+    heading.textContent=method==='card'?'Выбери карту для перевода:':'Перевод через PayPal';
+    info.appendChild(heading);
+    if(Number.isFinite(amount)&&amount>0){
+      const chosen=document.createElement('p');chosen.textContent='Выбранная сумма: $'+amount.toFixed(2)+' (при необходимости переведи в валюту получателя)';info.appendChild(chosen);
+    }
+    const list=document.createElement('div');list.className='real-payments';
+    for(const item of paymentDetails[method]){
+      const box=document.createElement('div');box.className='pay-option';
+      const title=document.createElement('strong');title.textContent=item.name;
+      const hint=document.createElement('small');hint.textContent=item.hint;
+      const value=document.createElement('div');value.className='pay-value';value.textContent=item.value;
+      const copy=document.createElement('button');copy.type='button';copy.className='pay-copy';copy.textContent='⧉ Скопировать';
+      copy.addEventListener('click',async()=>{
+        try{await navigator.clipboard.writeText(item.value);copy.textContent='✓ Скопировано'}
+        catch(e){const range=document.createRange();range.selectNodeContents(value);const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);copy.textContent='Выделено — скопируй вручную'}
+      });
+      box.append(title,hint,value,copy);list.appendChild(box);
+    }
+    info.appendChild(list);
+    const caution=document.createElement('p');caution.className='pay-caution';
+    caution.textContent='Перед отправкой проверь получателя и реквизиты в платёжном приложении. Перевод не подтверждается автоматически; прогресс сбора пока обновляется вручную.';
+    info.appendChild(caution);
+    info.classList.add('show');
+  }
+  for(const method of ['card','paypal']){
+    document.querySelector('[data-method="'+method+'"]').addEventListener('click',()=>showPayment(method));
+  }
+  const notice=document.querySelector('.notice');
+  if(notice)notice.textContent='Доступны переводы по указанным реквизитам и USDT TRC20. Этот сайт не принимает данные банковских карт и не проверяет поступление платежей автоматически. Проверяйте реквизиты перед отправкой.';
+})();
+</script>
 </body></html>
