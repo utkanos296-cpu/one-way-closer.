@@ -186,6 +186,7 @@ async function refreshProgress(){
 }
 refreshProgress();
 const f=$id('donation-confirm');
+$id('demo-back').addEventListener('click',()=>{const overlay=$id('demo-overlay');overlay.classList.remove('open','done');});
 f.addEventListener('submit',async e=>{
  e.preventDefault();
  const msg=$id('confirm-msg'),btn=$id('confirm-submit');
@@ -201,7 +202,52 @@ f.addEventListener('submit',async e=>{
   if(!r.ok||!result.success)throw new Error(result.error||`Ошибка ${r.status}`);
   msg.textContent='✅ Заявка получена! Проверим поступление денег. После подтверждения сумма появится на шкале.';
   f.reset();
+  // Play the original airplane landing only after the server saves the request.
+  const overlay=$id('demo-overlay');
+  $id('thank-kicker').textContent='ONE WAY CLOSER · ЗАЯВКА ПОЛУЧЕНА';
+  $id('thank-title').textContent='Спасибо за поддержку! 🥹💚';
+  $id('thank-desc').textContent='Подтверждение отправлено на проверку. Как только мы проверим поступление денег, сумма появится на общей шкале сбора.';
+  overlay.classList.remove('open','done');
+  void overlay.offsetWidth;
+  overlay.classList.add('open');
+  window.setTimeout(()=>overlay.classList.add('done'),3200);
  }catch(err){msg.textContent='Не удалось отправить: '+err.message+'. Попробуй ещё раз.';}
  finally{btn.disabled=false;}
 });
-</script></body></html>
+</script><script>
+/* Payment display and cat reaction — no demo balance changes. */
+(function(){
+ const input=document.getElementById('custom');
+ const emoji=document.getElementById('cat-emoji');
+ const label=document.getElementById('cat-text');
+ function updateCat(){
+  const n=Number(input.value);
+  let face='😽',message='Даже маленькая помощь важна! 💚';
+  if(n>=100){face='🙀';message='ТЫ СЕРЬЁЗНО?! Котик потерял дар речи 🤯';}
+  else if(n>=50){face='😻';message='ОГО! Ты невероятно щедрый! ✨';}
+  else if(n>=25){face='😹';message='Котик уже пакует чемодан! ✈️';}
+  else if(n>=10){face='🐱';message='Спасибо большое! Котик счастлив 🥹💚';}
+  emoji.textContent=face;label.textContent=message;
+ }
+ input.addEventListener('input',updateCat);
+ document.querySelectorAll('.amount').forEach(b=>b.addEventListener('click',updateCat));
+ updateCat();
+ const crypto=document.querySelector('[data-method="crypto"]');
+ const info=document.getElementById('payment-info');
+ crypto.addEventListener('click',()=>{
+  info.replaceChildren();
+  const panel=document.createElement('div');panel.className='crypto-panel';
+  const title=document.createElement('div');title.className='crypto-symbol';title.textContent='₮  USDT · Tether';
+  const network=document.createElement('div');network.className='crypto-network';network.textContent='Сеть: TRON (TRC20)';
+  const qr=document.createElement('img');qr.className='crypto-qr';qr.alt='QR-код USDT TRC20';
+  qr.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPUAAAD1CAIAAAAH0yQyAAAE40lEQVR4nO3dO45lNRRAURoxA0Ii5j8oIkLG8MjBLRm5/anNWmGrq+rWqy0HR/b1t8/n8xNE/Xz7AWAjfVOmb8r0TZm+KdM3ZfqmTN+U6ZsyfVOmb8r0TZm+KdM3ZfqmTN+U6ZsyfVOmb8r0Tdkvi1//62+//5Dn+IH++vOPf//j8Dnn/+cxw0caWvyNHvzdh+Y/kCHrN2X6pkzflOmbMn1Tpm/KVueDQ4sznXk75lmLE7od33P45cc+5C/917R+U6ZvyvRNmb4p0zdl+qZsy3xwaHH6szilWvzy+bHdXcee8+5fc571mzJ9U6ZvyvRNmb4p0zdl5+aDd+2YZ+04t7v4g/gH6zdl+qZM35TpmzJ9U6Zvyv4v88G7p4bnv3z+pz/4rsAHWb8p0zdl+qZM35TpmzJ9U3ZuPvjgfrdjV3zs2FQ4NPyeO7YfPvjXHLJ+U6ZvyvRNmb4p0zdl+qZsy3zwwa1tD44Cd+wf3HEr8YN/zXnWb8r0TZm+KdM3ZfqmTN+Ufft8Pref4YS72/rmH2ne3Yf/KqzflOmbMn1Tpm/K9E2ZvilbnQ/evaNjXm+Wt+PU8OL3fHAIa/2mTN+U6ZsyfVOmb8r0TdmL54sfnHwNzU++HtyTeOzClmPnoIes35TpmzJ9U6ZvyvRNmb4p23K++O5uu/nvucOOQeTiD3rw0PGxT8n6TZm+KdM3ZfqmTN+U6Zuy1f2DO06kzttx9HXRsX15Ow4dP3j5svPF8F36pkzflOmbMn1Tpm/Ktrx/cOjBNwDO/6Bjp5uPzVvvDg0XH2me9ZsyfVOmb8r0TZm+KdM3ZVveP3h3X968+XnW3SO6i0PDY9eb7Hj/oP2D8F36pkzflOmbMn1Tpm/Kzr1/8NiVFG5P/rG+ysbPIes3ZfqmTN+U6ZsyfVOmb8rOnS+ed/cO39754mOT2aFjd54MWb8p0zdl+qZM35TpmzJ9U7blfPHQ/JTq7na5oWPXm8w7dkB43vxf89hHZ/2mTN+U6ZsyfVOmb8r0TdnqfPDBu3GP7aE7ttdvhwef0/sH4b/RN2X6pkzflOmbMn1TtuV88d0DrUN3DwjPe/BS47t3syyyflOmb8r0TZm+KdM3Zfqm7Nz+wfkvP/YGwHnHJp53XwvYmyRavynTN2X6pkzflOmbMn1Tdu7+4nnHzizv2II370tfanyM88XwXfqmTN+U6ZsyfVOmb8q2zAcf9OCx36Hec7q/GHbRN2X6pkzflOmbMn1Ttnq++MFdbMfu8D12xcfd080PfiDzrN+U6ZsyfVOmb8r0TZm+KVudDw4d2zL24Ixs/pGOncK++z3v/iDrN2X6pkzflOmbMn1Tpm/KtswHh+6Ow44N+O5OEu++UfHBiaf1mzJ9U6ZvyvRNmb4p0zdl5+aDd+24mffYDr4H9yR+lfckWr8p0zdl+qZM35TpmzJ9U/Z/mQ8OLU6pFmeOd3dE7viNjk1R51m/KdM3ZfqmTN+U6ZsyfVN2bj54d060Y1/esQnd3Y9uaHH/oPtJ4AfQN2X6pkzflOmbMn1TtmU++OClxjv20N2d5e34kHc8/N0YrN+U6ZsyfVOmb8r0TZm+Kfv2+XxuPwPsYv2mTN+U6ZsyfVOmb8r0TZm+KdM3ZfqmTN+U6ZsyfVOmb8r0TZm+KdM3ZfqmTN+U6ZsyfVP2N48tQCv9ej/sAAAAAElFTkSuQmCC';
+  const caption=document.createElement('div');caption.className='crypto-caption';caption.textContent='Адрес для перевода';
+  const address=document.createElement('div');address.className='crypto-address';address.textContent='TAaz3XftEqT9tVbLmA3xkhBpFGvN3w3vwZ';
+  const copy=document.createElement('button');copy.type='button';copy.className='crypto-copy';copy.textContent='⧉ Скопировать адрес';
+  copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(address.textContent);copy.textContent='✓ Адрес скопирован';}catch{copy.textContent='Выдели адрес и скопируй вручную';}});
+  const warning=document.createElement('p');warning.className='crypto-warning';warning.textContent='⚠️ Отправляйте только USDT через сеть TRON (TRC20). Проверьте сеть и адрес перед переводом.';
+  panel.append(title,network,qr,caption,address,copy,warning);info.appendChild(panel);info.classList.add('show');
+ });
+})();
+</script>
+</body></html>
