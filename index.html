@@ -12,28 +12,35 @@ html{scroll-behavior:smooth} .mobile-donate{display:none}@media(max-width:800px)
 .thank-horizon{position:absolute;bottom:61px;left:0;right:0;height:24px;background:linear-gradient(90deg,#1c2934,#354551,#1b2933);clip-path:polygon(0 80%,8% 50%,13% 65%,20% 22%,25% 45%,32% 10%,38% 60%,46% 38%,52% 65%,60% 12%,65% 45%,72% 20%,80% 65%,90% 40%,100% 75%,100% 100%,0 100%)}
 .thank-runway{position:absolute;left:0;right:0;bottom:0;height:62px;background:linear-gradient(180deg,#28333d,#11171e);border-top:2px solid #b9d8ab}
 .thank-runway:after{content:'';position:absolute;left:0;right:0;top:34px;border-top:3px dashed #d6dfb5a8}
-.thank-plane{position:absolute;left:0;top:0;width:154px;height:86px;filter:drop-shadow(0 9px 9px #0008);transform:translate(-160px,-10px) rotate(-7deg);transform-origin:center}
+.thank-plane{position:absolute;left:0;top:0;width:154px;height:86px;filter:drop-shadow(0 9px 9px #0008);transform-origin:50% 65%;will-change:transform}
 .thank-plane svg{width:100%;height:100%;display:block}
-.thank-overlay.open .thank-plane{animation:landing 3.5s cubic-bezier(.25,.1,.22,1) both}
+.thank-overlay.open .thank-plane{animation:landing 3.2s linear both}
 .thank-smoke{position:absolute;bottom:57px;left:57%;width:50px;height:17px;border-radius:50%;background:#dce4e5a8;filter:blur(8px);opacity:0}
-.thank-overlay.open .thank-smoke{animation:touchdown 3.5s both}
+.thank-overlay.open .thank-smoke{animation:touchdown 3.2s ease-out both}
+/* Travel starts immediately, descends continuously, then rolls along the runway. */
 @keyframes landing{
-0%{transform:translate(-160px,-15px) rotate(-9deg)}
-45%{transform:translate(calc(38vw - 120px),112px) rotate(-4deg)}
-67%{transform:translate(calc(54vw - 120px),145px) rotate(0deg)}
-75%{transform:translate(calc(60vw - 120px),145px) rotate(1deg)}
-100%{transform:translate(calc(65vw - 120px),145px) rotate(0deg)}
+  0%{transform:translate(-145px,7px) rotate(-8deg) scale(.73)}
+  12%{transform:translate(-78px,26px) rotate(-7deg) scale(.77)}
+  28%{transform:translate(-10px,56px) rotate(-5deg) scale(.82)}
+  46%{transform:translate(58px,89px) rotate(-3deg) scale(.87)}
+  64%{transform:translate(115px,119px) rotate(-1deg) scale(.91)}
+  76%{transform:translate(152px,137px) rotate(0deg) scale(.92)}
+  82%{transform:translate(168px,139px) rotate(1deg) scale(.92)}
+  100%{transform:translate(200px,139px) rotate(0deg) scale(.92)}
 }
-@keyframes touchdown{0%,62%{opacity:0;transform:scale(.3)}70%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(2)}}
-@media(min-width:540px){@keyframes landing{
-0%{transform:translate(-160px,-15px) rotate(-9deg)}
-45%{transform:translate(150px,112px) rotate(-4deg)}
-67%{transform:translate(255px,145px) rotate(0deg)}
-75%{transform:translate(290px,145px) rotate(1deg)}
-100%{transform:translate(310px,145px) rotate(0deg)}
+@keyframes touchdown{0%,72%{opacity:0;transform:scale(.3)}80%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(2)}}
+@media(max-width:430px){.thank-plane{width:126px;height:72px}@keyframes landing{
+  0%{transform:translate(-115px,9px) rotate(-8deg) scale(.73)}
+  12%{transform:translate(-65px,27px) rotate(-7deg) scale(.77)}
+  28%{transform:translate(-5px,57px) rotate(-5deg) scale(.82)}
+  46%{transform:translate(48px,91px) rotate(-3deg) scale(.87)}
+  64%{transform:translate(93px,121px) rotate(-1deg) scale(.91)}
+  76%{transform:translate(120px,144px) rotate(0deg) scale(.92)}
+  82%{transform:translate(135px,145px) rotate(1deg) scale(.92)}
+  100%{transform:translate(170px,145px) rotate(0deg) scale(.92)}
 }}
 .thank-message{opacity:0;transform:translateY(15px)}
-.thank-overlay.done .thank-message{animation:thankappear .8s 3.5s both;animation-name:thankappear;animation-duration:.8s;animation-delay:2.3s;animation-fill-mode:both} .thank-overlay.done .thank-message{animation:thankappear .8s forwards}
+.thank-overlay.done .thank-message{animation:thankappear .65s ease-out forwards}
 .thank-message h2{font:600 clamp(30px,7vw,56px)/1.15 Manrope,sans-serif;letter-spacing:-.05em}
 .thank-message p{color:#bac2c7;line-height:1.7}
 .thank-close{margin-top:22px;background:#d8ff91;border:0;color:#10131a;border-radius:30px;padding:14px 28px;font-weight:800}
@@ -76,7 +83,7 @@ function progress(){const pct=Math.min(100,total/goal*100);const bar=document.qu
 // Original amount buttons continue to set the custom input; this listener updates our new UI.
 document.querySelectorAll('.amount').forEach(b=>b.addEventListener('click',cat));
 get('custom').addEventListener('input',cat);
-get('demo-send').addEventListener('click',function(){const n=chosen();if(!n){get('cat-text').textContent='Введи сумму больше нуля';get('custom').focus();return}total+=n;progress();get('step-note').textContent='✦ На один шаг ближе к встрече! +$'+n+' (демо)';const overlay=get('demo-overlay');overlay.classList.remove('open','done');void overlay.offsetWidth;overlay.classList.add('open');if(pendingTimer)clearTimeout(pendingTimer);pendingTimer=setTimeout(()=>overlay.classList.add('done'),3500)});
+get('demo-send').addEventListener('click',function(){const n=chosen();if(!n){get('cat-text').textContent='Введи сумму больше нуля';get('custom').focus();return}total+=n;progress();get('step-note').textContent='✦ На один шаг ближе к встрече! +$'+n+' (демо)';const overlay=get('demo-overlay');overlay.classList.remove('open','done');void overlay.offsetWidth;overlay.classList.add('open');if(pendingTimer)clearTimeout(pendingTimer);pendingTimer=setTimeout(()=>overlay.classList.add('done'),3200)});
 get('demo-back').addEventListener('click',()=>get('demo-overlay').classList.remove('open','done'));
 get('demo-reset').addEventListener('click',()=>{total=base;progress();get('step-note').textContent='';get('demo-overlay').classList.remove('open','done')});
 // Bank choices appear only when the card method is clicked.
