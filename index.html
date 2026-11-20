@@ -250,4 +250,119 @@ f.addEventListener('submit',async e=>{
  });
 })();
 </script>
-</body></html>
+</body>
+<style>
+#welcome-screen{
+ position:fixed;inset:0;z-index:20000;
+ display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(circle at 50% 35%,#293b31,#10131a 75%);
+ color:#fff;text-align:center;padding:25px;
+ transition:opacity .7s,visibility .7s;
+}
+#welcome-screen.hide{
+ opacity:0;visibility:hidden;pointer-events:none;
+}
+.welcome-content{max-width:420px;position:relative}
+.welcome-content h2{
+ color:#d8ff91;font-size:30px;
+ font-family:Manrope,sans-serif;
+}
+.welcome-content p{line-height:1.7;color:#c6ceca}
+.welcome-cat{width:190px;max-width:70%;overflow:visible}
+.welcome-paw{
+ transform-origin:145px 122px;
+ animation:wavepaw 1.2s ease-in-out infinite;
+}
+.welcome-eyes{
+ transform-origin:100px 92px;
+ animation:blinkcat 3.5s infinite;
+}
+.welcome-heart{
+ position:absolute;font-size:24px;
+ animation:floatheart 3s ease-in-out infinite;
+}
+.welcome-heart.one{top:10px;left:5%}
+.welcome-heart.two{top:85px;right:5%;animation-delay:1s}
+.welcome-start{
+ background:#d8ff91;color:#10131a;
+ border:0;border-radius:40px;
+ padding:15px 35px;margin-top:15px;
+ font-size:16px;font-weight:800;
+}
+@keyframes wavepaw{
+ 0%,100%{transform:rotate(-15deg)}
+ 50%{transform:rotate(20deg)}
+}
+@keyframes blinkcat{
+ 0%,43%,49%,100%{transform:scaleY(1)}
+ 46%{transform:scaleY(.08)}
+}
+@keyframes floatheart{
+ 0%,100%{transform:translateY(0);opacity:.5}
+ 50%{transform:translateY(-22px);opacity:1}
+}
+@media(prefers-reduced-motion:reduce){
+ #welcome-screen *{animation:none!important}
+}
+</style>
+
+<div id="welcome-screen" role="dialog"
+     aria-label="Приветствие">
+ <div class="welcome-content">
+  <span class="welcome-heart one">💚</span>
+  <span class="welcome-heart two">💚</span>
+
+  <svg class="welcome-cat" viewBox="0 0 200 190"
+       aria-label="Милый котик">
+   <path d="M35 84 L43 30 L77 53 Q100 44 123 53 L157 30 L165 84"
+         fill="#f0bd8c" stroke="#b68159" stroke-width="4"/>
+   <ellipse cx="100" cy="103" rx="67" ry="61"
+            fill="#f0bd8c" stroke="#b68159" stroke-width="4"/>
+   <g class="welcome-eyes" fill="#443b37">
+    <ellipse cx="77" cy="92" rx="5" ry="9"/>
+    <ellipse cx="123" cy="92" rx="5" ry="9"/>
+   </g>
+   <path d="M93 111 L107 111 L100 118 Z" fill="#cb777c"/>
+   <path d="M100 118 Q90 130 82 120 M100 118 Q110 130 118 120"
+         fill="none" stroke="#443b37" stroke-width="3"/>
+   <path d="M58 114 L23 107 M58 125 L23 130
+            M142 114 L177 107 M142 125 L177 130"
+         stroke="#fff0dc" stroke-width="3"/>
+   <g class="welcome-paw">
+    <path d="M145 145 Q166 135 164 111
+             Q163 96 175 96 Q188 98 183 119
+             Q181 149 157 162 Z"
+          fill="#f0bd8c" stroke="#b68159"
+          stroke-width="4"/>
+    <circle cx="174" cy="109" r="5" fill="#d98d88"/>
+   </g>
+  </svg>
+
+  <h2>Привет! Рады тебя видеть 💚</h2>
+  <p>
+   Спасибо, что заглянул! 🥹<br>
+   Мы очень надеемся на твою поддержку.
+   Даже маленький шаг может приблизить
+   нашу долгожданную встречу! ✈️
+  </p>
+  <button class="welcome-start" id="welcome-start">
+   Начнём? ✨
+  </button>
+ </div>
+</div>
+
+<script>
+(function(){
+ const screen=document.getElementById('welcome-screen');
+ const button=document.getElementById('welcome-start');
+ let timer;
+ function closeWelcome(){
+  clearTimeout(timer);
+  screen.classList.add('hide');
+  setTimeout(()=>screen.remove(),750);
+ }
+ button.addEventListener('click',closeWelcome);
+ timer=setTimeout(closeWelcome,5500);
+})();
+</script>
+</html>
